@@ -23,9 +23,13 @@ class ChromeTest {
   void setupTest() {
     driver = new ChromeDriver();
     driver.get("http://localhost:8080/addressbook/index.php");
+    login("admin", "secret");
+  }
+
+  private void login(String username, String password) {
     driver.manage().window().setSize(new Dimension(1680, 1025));
-    driver.findElement(By.name("user")).sendKeys("admin");
-    driver.findElement(By.name("pass")).sendKeys("secret");
+    driver.findElement(By.name("user")).sendKeys(username);
+    driver.findElement(By.name("pass")).sendKeys(password);
     driver.findElement(By.cssSelector("input:nth-child(7)")).click();
   }
 
@@ -38,16 +42,36 @@ class ChromeTest {
 
   @Test
   void testGroupCreation() {
-    driver.findElement(By.linkText("groups")).click();
-    driver.findElement(By.name("new")).click();
-    driver.findElement(By.name("group_name")).click();
-    driver.findElement(By.name("group_name")).sendKeys("test1");
-    driver.findElement(By.name("group_header")).sendKeys("test2");
-    driver.findElement(By.name("group_footer")).sendKeys("test3");
-    driver.findElement(By.name("submit")).click();
-    driver.findElement(By.linkText("groups")).click();
-    driver.findElement(By.linkText("Logout")).click();
+    goToGroupPage();
+    initGroup();
+    fillGroup(new GroupData("test1", "test2", "test3"));
+    submitGroup();
+    returnToGroupPage();
     // Your test logic here
+  }
+
+  private void returnToGroupPage() {
+    driver.findElement(By.linkText("Logout")).click();
+  }
+
+  private void submitGroup() {
+    driver.findElement(By.linkText("groups")).click();
+  }
+
+  private void fillGroup(GroupData groupData) {
+    driver.findElement(By.name("group_name")).click();
+    driver.findElement(By.name("group_name")).sendKeys(groupData.getName());
+    driver.findElement(By.name("group_header")).sendKeys(groupData.getHeader());
+    driver.findElement(By.name("group_footer")).sendKeys(groupData.getFooter());
+    driver.findElement(By.name("submit")).click();
+  }
+
+  private void initGroup() {
+    driver.findElement(By.name("new")).click();
+  }
+
+  private void goToGroupPage() {
+    driver.findElement(By.linkText("groups")).click();
   }
 
 }
